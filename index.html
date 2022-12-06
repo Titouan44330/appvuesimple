@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>commits-example</title>
+	</head>
+	<body>
+		<div id="demo">
+			<!-- <pre>{{commits}}</pre> -->
+			<h1>Latest Vue.js Commits</h1>
+			<input
+				type="text"
+				placeholder="Ville"
+				v-model="ville"
+			/>
+			<input
+				type="text"
+				placeholder="Numéro"
+				v-model="num"
+			/>
+			<input
+				type="text"
+				placeholder="Pays"
+				v-model="pays"
+			/>
+			<input
+				type="text"
+				placeholder="Code postal"
+				v-model="codePost"
+			/>
+			<input
+				type="text"
+				placeholder="Rue"
+				v-model="rue"
+			/>
+			<br>
+			<input type="button" v-on:click="makeAMap(ville, num, codePost, pays, rue)">Valider</input>
+			<br>
+			<iframe
+			src="makeAMap(source.ville,source.numero,source.codePost,source.pays,source.rue)"
+			width="600"
+			height="450"
+			style="border:0;"
+			allowfullscreen=""
+			loading="lazy"
+			></iframe>
+		</div>
+		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+		<script src="https://unpkg.com/vue@3"></script>
+		<script>
+			const apiURL =
+				"https://api.github.com/repos/vuejs/vue/commits?per_page=3&sha=";
+			const config = {
+			};
+
+			Vue.createApp({
+				data() {
+					return {
+						source : {
+							default: 1,
+							ville: "Paris",
+							rue: "Champ de Mars",
+							numero: "5",
+							pays: "France",
+							codePost: "75007"
+						}
+					};
+				},
+
+				methods: {
+					makeAMap: function(ville, num, codePost, pays, rue) {
+						if (source.default == 1) {
+							const sourceTemp = "https://www.google.com/maps?q=Champ de Mars 5, 75007 Paris, France&z=9&output=embed"
+							source.default=0;
+							return sourceTemp
+						} else {
+							const address = rue + ' ' +num+', '+codePost+' '+ville+', '+pays;
+							src="https://www.google.com/maps?q="+address+"&z=9&output=embed"
+							console.log(src);
+							return src;
+						}
+					},
+				},
+			}).mount("#demo");
+		</script>
+	</body>
+</html>
