@@ -1,86 +1,137 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>commits-example</title>
-		<style>
-			#demo {
-				font-family: "Helvetica", Arial, sans-serif;
-			}
-			a {
-				text-decoration: none;
-				color: #f66;
-			}
-			li {
-				line-height: 1.5em;
-				margin-bottom: 20px;
-			}
-			.author,
-			.date {
-				font-weight: bold;
-			}
-		</style>
-	</head>
-	<body>
-		<div id="demo">
-            {{res}}
-		</div>
-		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-		<script src="https://unpkg.com/vue@3"></script>
-		<script>
-			const apiURL =
-				"https://pokeapi.co/api/v2/pokemon";
-			const config = {
-			};
 
-			Vue.createApp({
-				data() {
-					return {
-						res: null,
-					};
-				},
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>commits-example</title>
+    <style>
+        #demo {
+            font-family: "Helvetica", Arial, sans-serif;
+            text-align: center;
+        }
+        
+        #lesPokemons {
+            padding-left: 1%;
+            padding-bottom: 1%;
+            border: solid;
+            border-radius: 10px 100px / 120px;
+        }
+        
+        #buttonPoke {
+            border-radius: 10% / 50%;
+            background-color: lightcyan;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        #demo h3 {
+            text-align: left;
+        }
+        
+        a {
+            text-decoration: none;
+            color: #f66;
+        }
+        
+        li {
+            line-height: 1.5em;
+            margin-bottom: 20px;
+        }
+        
+        .author,
+        .date {
+            font-weight: bold;
+        }
+    </style>
+</head>
 
-				created: function () {
-					this.fetchDataPromise();
-					// this.fetchDataAsync()
-				},
+<body>
+    <div id="demo">
+        <div id="lesPokemons">
+            <h3>Choisis un Pokemon :</h3><br>
+            <template v-for="pokemon in res.results">
+            <input
+                type="button"
+                id="buttonPoke"
+                v-model="pokemon.name"
+                id="pokemon"
+                v-on:click="pokeDetails(pokemon.url)"
+            />
+        </template>
+        </div>
+        <br>
+        <template v-if="activeDetails != false">
+            <h2>Le Pokemon</h2>
+            <input type="text" id="name" v-model="detailsPoke.forms[0].name" readonly="true"><br>
+            <h2>Les types :</h2>
+            <template v-for="type in detailsPoke.types">
+                <input type="text" id="types" v-model="type.type.name" readonly="true"><br>
+            </template>
+        <h2>Les attaques :</h2>
+        <template v-for="move in detailsPoke.moves">
+                <input type="text" id="types" v-model="move.move.name" readonly="true">
+            </template>
+        <!-- <img src="detailsPoke.sprites.other.official-artwork.front_default"> -->
+        </template>
+    </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/vue@3"></script>
+    <script>
+        const apiURL =
+            "https://pokeapi.co/api/v2/pokemon";
+        const config = {};
 
-				watch: {
-					currentBranch: "fetchDataPromise", //fetchDataAsync
-				},
-				methods: {
-					fetchDataPromise: function () {
-						const self = this;
-						axios
-							.get(apiURL, config)
-							.then(function (response) {
-								console.log(response.data);
-								self.res = response.data;
-							})
-							.catch(function (error) {
-								console.log(error);
-							});
-					},
-					// fetchDataAsync: async function () {
-					// 	try {
-					//   	const response = await axios.get(apiURL + this.currentBranch, config)
-					// 	  console.log(response.data)
-					// 	  this.commits = response.data
-					//         // console.log(self.commits[0].html_url);
-					//   } catch(error) {
-					//     console.log(error);
-					//   }
-					// },
-					formattedMessage: function (message) {
-						const newline = message.indexOf("\n");
-						return newline > 0 ? message.slice(0, newline) : message;
-					},
-					formattedDate: function (date) {
-						return date.replace(/T|Z/g, " ");
-					},
-				},
-			}).mount("#demo");
-		</script>
-	</body>
+        Vue.createApp({
+            data() {
+                return {
+                    activeDetails: false,
+                    detailsPoke: [],
+                    types: [],
+                    res: [],
+                };
+            },
+
+            created: function() {
+                this.fetchDataPromise();
+            },
+
+            methods: {
+                fetchDataPromise: function() {
+                    const self = this;
+                    axios
+                        .get(apiURL, config)
+                        .then(function(response) {
+                            console.log(response.data);
+                            self.res = response.data;
+                        })
+                        .catch(function(error) {
+                            console.log(error);
+                        });
+                },
+                pokeDetails: function(urlPoke) {
+                    const self = this;
+                    axios
+                        .get(urlPoke, config)
+                        .then(function(response) {
+                            console.log(response.data);
+                            self.detailsPoke = response.data;
+                            self.activeDetails = true
+                        })
+                        .catch(function(error) {
+                            console.log(error);
+                        });
+                },
+                formattedMessage: function(message) {
+                    const newline = message.indexOf("\n");
+                    return newline > 0 ? message.slice(0, newline) : message;
+                },
+                formattedDate: function(date) {
+                    return date.replace(/T|Z/g, " ");
+                },
+            },
+        }).mount("#demo");
+    </script>
+</body>
+
 </html>
